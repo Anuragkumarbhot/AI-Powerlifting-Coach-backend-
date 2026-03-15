@@ -1,48 +1,52 @@
-const express = require("express");
-const cors = require("cors");
-const http = require("http");
-const { Server } = require("socket.io");
+const express = require("express")
+const http = require("http")
+const cors = require("cors")
+const { Server } = require("socket.io")
 
-const app = express();
+const app = express()
 
-app.use(cors());
-app.use(express.json());
+app.use(cors())
+app.use(express.json())
 
-app.get("/", (req, res) => {
-  res.send("🏋️ AI Powerlifting Backend Running");
-});
+const server = http.createServer(app)
 
-const server = http.createServer(app);
+const io = new Server(server,{
+  cors:{ origin:"*" }
+})
 
-const io = new Server(server, {
-  cors: {
-    origin: "*"
-  }
-});
+let meetState = {
+  athlete:"",
+  lift:"Squat",
+  weight:0
+}
 
-let currentLift = {
-  athlete: "John Doe",
-  lift: "Squat",
-  weight: 220,
-  attempt: 1
-};
+let queue = []
 
-io.on("connection", (socket) => {
+io.on("connection",(socket)=>{
 
-  console.log("Judge/Client connected");
+  console.log("client connected")
 
-  socket.emit("updateScoreboard", currentLift);
+  socket.emit("meetUpdate",meetState)
+  socket.emit("queueUpdate",queue)
 
-  socket.on("updateLift", (data) => {
-    currentLift = data;
+  socket.on("updateLift",(data)=>{
+    meetState = data
+    io.emit("meetUpdate",meetState)
+  })
 
-    io.emit("updateScoreboard", currentLift);
-  });
+  socket.on("addQueue",(athlete)=>{
+    queue.push(athlete)
+    io.emit("queueUpdate",queue)
+  })
 
-});
+})
 
-const PORT = process.env.PORT || 5000;
+app.get("/",(req,res)=>{
+  res.send("Powerlifting Meet Backend Running")
+})
 
-server.listen(PORT, () => {
-  console.log("Server running on port", PORT);
-});
+const PORT = process.env.PORT || 5000
+
+server.listen(PORT,()=>{
+  console.log("Server running on port",PORT)
+})
