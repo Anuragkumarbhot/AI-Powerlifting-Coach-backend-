@@ -9,7 +9,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Powerlifting Live Server Running");
+  res.send("🏋️ AI Powerlifting Backend Running");
 });
 
 const server = http.createServer(app);
@@ -29,10 +29,13 @@ let currentLift = {
 
 io.on("connection", (socket) => {
 
+  console.log("Judge/Client connected");
+
   socket.emit("updateScoreboard", currentLift);
 
   socket.on("updateLift", (data) => {
     currentLift = data;
+
     io.emit("updateScoreboard", currentLift);
   });
 
