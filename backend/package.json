@@ -1,7 +1,6 @@
 {
-  "name": "ai-powerlifting-backend",
-  "version": "1.0.0",
-  "description": "Powerlifting live competition backend",
+  "name": "ai-powerlifting-coach-backend",
+  "version": "2.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -9,6 +8,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.2"
   }
 }
